@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLOOD — La Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #cc0000;
+    --red-bright: #ff1a1a;
+    --red-dark: #660000;
+    --red-glow: rgba(204, 0, 0, 0.4);
+    --red-subtle: rgba(204, 0, 0, 0.08);
+    --bg: #050505;
+    --bg-card: #0d0d0d;
+    --bg-border: #1a0000;
+    --text: #e8e8e8;
+    --text-muted: #888;
+    --pixel: 4px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.3;
+  }
+
+  /* SCANLINES */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 3rem;
+    background: linear-gradient(to bottom, rgba(5,5,5,0.95), transparent);
+    border-bottom: 1px solid rgba(204,0,0,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.85rem;
+    color: var(--red-bright);
+    text-shadow: 0 0 20px var(--red-glow), 0 0 40px var(--red-glow);
+    letter-spacing: 3px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+    image-rendering: pixelated;
+  }
+
+  .nav-links a:hover { color: var(--red-bright); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-cta {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--red-bright);
+    border: 2px solid var(--red);
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    image-rendering: pixelated;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .nav-cta:hover {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 20px var(--red-glow);
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 2rem 4rem;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(204,0,0,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(204,0,0,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: grid-drift 20s linear infinite;
+  }
+
+  @keyframes grid-drift {
+    from { transform: perspective(600px) rotateX(20deg) translateY(0); }
+    to { transform: perspective(600px) rotateX(20deg) translateY(40px); }
+  }
+
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, var(--bg) 80%);
+  }
+
+  .hero-content { position: relative; z-index: 10; }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--red);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+  }
+
+  .hero-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    line-height: 1.2;
+    color: #fff;
+    text-shadow:
+      4px 4px 0 var(--red-dark),
+      8px 8px 0 rgba(100,0,0,0.5),
+      0 0 60px var(--red-glow),
+      0 0 120px rgba(204,0,0,0.2);
+    margin-bottom: 0.5rem;
+    image-rendering: pixelated;
+  }
+
+  .hero-title span { color: var(--red-bright); }
+
+  .hero-subtitle {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+
+  .hero-desc {
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    font-size: 1.1rem;
+    color: #aaa;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .hero-desc strong { color: var(--red-bright); font-weight: 700; }
+
+  .hero-btns {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    color: #fff;
+    background: var(--red);
+    border: none;
+    padding: 1rem 2rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    transition: all 0.15s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .btn-primary:hover {
+    background: var(--red-bright);
+    box-shadow: 0 0 30px var(--red-glow), 0 0 60px rgba(204,0,0,0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    color: var(--red-bright);
+    background: transparent;
+    border: 2px solid var(--red);
+    padding: 1rem 2rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.15s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .btn-secondary:hover {
+    background: var(--red-subtle);
+    box-shadow: 0 0 20px var(--red-glow);
+    transform: translateY(-2px);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-indicator span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--red);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .scroll-arrow {
+    width: 16px;
+    height: 16px;
+    border-right: 2px solid var(--red);
+    border-bottom: 2px solid var(--red);
+    transform: rotate(45deg);
+    image-rendering: pixelated;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ── SECTION SHARED ── */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--red);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    color: #fff;
+    line-height: 1.5;
+    text-shadow: 3px 3px 0 var(--red-dark);
+  }
+
+  .section-divider {
+    width: 60px;
+    height: 4px;
+    background: var(--red);
+    margin: 1.5rem auto 0;
+    image-rendering: pixelated;
+    clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  }
+
+  /* ── MANIFESTO ── */
+  #manifesto {
+    position: relative;
+    padding: 6rem 2rem;
+    max-width: none;
+  }
+
+  .manifesto-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .manifesto-line {
+    border-left: 3px solid var(--red);
+    padding-left: 2rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .manifesto-line::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--red-bright);
+    image-rendering: pixelated;
+  }
+
+  .manifesto-line p {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: #ccc;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .manifesto-line strong {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .manifesto-line .highlight {
+    color: var(--red-bright);
+    font-weight: 700;
+  }
+
+  /* ── STATS ── */
+  #stats {
+    background: linear-gradient(135deg, rgba(100,0,0,0.05) 0%, transparent 50%);
+    border-top: 1px solid rgba(204,0,0,0.1);
+    border-bottom: 1px solid rgba(204,0,0,0.1);
+    padding: 5rem 2rem;
+    max-width: none;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(204,0,0,0.12);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .stat-card:hover::before { transform: scaleX(1); }
+  .stat-card:hover { border-color: rgba(204,0,0,0.3); background: rgba(13,0,0,0.8); }
+
+  .stat-number {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--red-bright);
+    text-shadow: 0 0 20px var(--red-glow);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ── PILLARS (Économie) ── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5px;
+  }
+
+  .pillar {
+    background: var(--bg-card);
+    border: 1px solid rgba(204,0,0,0.1);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  .pillar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(204,0,0,0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .pillar:hover {
+    border-color: rgba(204,0,0,0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(204,0,0,0.08);
+  }
+
+  .pillar-icon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .pillar-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .pillar h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .pillar p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .pillar p strong { color: #bbb; }
+
+  /* ── RÈGLES ── */
+  #regles {
+    padding: 6rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .rule-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(204,0,0,0.08);
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .rule-item:hover {
+    border-color: rgba(204,0,0,0.25);
+    background: rgba(13,0,0,0.9);
+    transform: translateX(4px);
+  }
+
+  .rule-num {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.9rem;
+    color: var(--red);
+    opacity: 0.6;
+    padding-top: 4px;
+  }
+
+  .rule-content h4 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .rule-content p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── RECRUTEMENT ── */
+  #recrutement {
+    max-width: none;
+    padding: 6rem 2rem;
+    background: var(--red-subtle);
+    border-top: 1px solid rgba(204,0,0,0.15);
+    border-bottom: 1px solid rgba(204,0,0,0.15);
+    text-align: center;
+  }
+
+  .recruit-inner { max-width: 700px; margin: 0 auto; }
+
+  .recruit-inner .section-header { margin-bottom: 2rem; }
+
+  .recruit-desc {
+    font-size: 1.1rem;
+    color: #aaa;
+    line-height: 1.9;
+    margin-bottom: 3rem;
+  }
+
+  .requirements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+    text-align: left;
+  }
+
+  .req-item {
+    padding: 1rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(204,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+
+  .req-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--red-bright);
+    flex-shrink: 0;
+    image-rendering: pixelated;
+  }
+
+  .req-item span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: #bbb;
+    letter-spacing: 1px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(204,0,0,0.08);
+  }
+
+  .footer-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.8rem;
+    color: var(--red-bright);
+    text-shadow: 0 0 20px var(--red-glow);
+    margin-bottom: 1rem;
+    letter-spacing: 4px;
+  }
+
+  .footer-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ── PIXEL DECORATION ── */
+  .pixel-border {
+    position: relative;
+  }
+
+  .pixel-border::before, .pixel-border::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--red);
+    image-rendering: pixelated;
+  }
+
+  .pixel-border::before { top: 0; left: 0; }
+  .pixel-border::after { bottom: 0; right: 0; }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--red-dark);
+    border-top: 1px solid rgba(204,0,0,0.3);
+    border-bottom: 1px solid rgba(204,0,0,0.3);
+    padding: 0.6rem 0;
+    white-space: nowrap;
+  }
+
+  .ticker-track {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-track span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,200,200,0.7);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 0 3rem;
+  }
+
+  .ticker-track span.sep { color: var(--red-bright); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* FADE IN ANIMATION */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero-title { font-size: 2rem; }
+    section { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⬛ BLOOD</div>
+  <ul class="nav-links">
+    <li><a href="#manifesto">Manifeste</a></li>
+    <li><a href="#pillars">Économie</a></li>
+    <li><a href="#regles">Règles</a></li>
+    <li><a href="#recrutement">Rejoindre</a></li>
+  </ul>
+  <a href="#recrutement" class="nav-cta">POSTULER</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:none; padding-left:0; padding-right:0;">
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+
+  <div class="hero-content">
+    <p class="hero-tag">// Minecraft · Économie · Domination</p>
+    <h1 class="hero-title"><span>BLOOD</span></h1>
+    <p class="hero-subtitle">La team qui domine l'économie</p>
+    <p class="hero-desc">
+      Quand les autres font la guerre à l'épée,<br>
+      nous faisons la guerre <strong>au portefeuille</strong>.<br>
+      Le sang coule dans les marchés.
+    </p>
+    <div class="hero-btns">
+      <a href="#recrutement" class="btn-primary">REJOINDRE LA TEAM</a>
+      <a href="#manifesto" class="btn-secondary">NOTRE MANIFESTE</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span>BLOOD ÉCONOMY</span><span class="sep">◆</span>
+    <span>MARCHÉ CONTRÔLÉ</span><span class="sep">◆</span>
+    <span>TRADES DOMINÉS</span><span class="sep">◆</span>
+    <span>RICHESSE ABSOLUE</span><span class="sep">◆</span>
+    <span>MONOPOLE EN COURS</span><span class="sep">◆</span>
+    <span>BLOOD ÉCONOMY</span><span class="sep">◆</span>
+    <span>MARCHÉ CONTRÔLÉ</span><span class="sep">◆</span>
+    <span>TRADES DOMINÉS</span><span class="sep">◆</span>
+    <span>RICHESSE ABSOLUE</span><span class="sep">◆</span>
+    <span>MONOPOLE EN COURS</span><span class="sep">◆</span>
+  </div>
+</div>
+
+<!-- MANIFESTE -->
+<section id="manifesto">
+  <div class="manifesto-inner">
+    <div class="section-header fade-up">
+      <span class="section-eyebrow">// 01 — Manifeste</span>
+      <h2 class="section-title">POURQUOI BLOOD ?</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="manifesto-line fade-up">
+      <p>Les autres teams passent leur temps à se battre.<br>
+      Elles s'épuisent. Elles brûlent des ressources.<br>
+      <strong>Nous, on accumule pendant qu'elles saignent.</strong></p>
+    </div>
+
+    <div class="manifesto-line fade-up">
+      <p>BLOOD, c'est la team qui a compris que <span class="highlight">l'économie est la vraie arme</span> d'un serveur Minecraft.<br>
+      Contrôle les ressources, contrôle les prix, et tu contrôles tout le monde.</p>
+    </div>
+
+    <div class="manifesto-line fade-up">
+      <p>On ne demande pas à être respectés.<br>
+      <strong>On achète le respect.</strong><br>
+      On ne demande pas de trêve.<br>
+      <strong>On fait en sorte qu'ils aient besoin de nous pour survivre.</strong></p>
+    </div>
+
+    <div class="manifesto-line fade-up">
+      <p>La guerre, c'est leur jeu.<br>
+      <span class="highlight">L'économie, c'est le nôtre.</span><br>
+      Et on ne perd jamais au nôtre.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stats-grid">
+    <div class="stat-card fade-up">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">focus économie</span>
+    </div>
+    <div class="stat-card fade-up">
+      <span class="stat-number">0</span>
+      <span class="stat-label">ressource gaspillée</span>
+    </div>
+    <div class="stat-card fade-up">
+      <span class="stat-number">∞</span>
+      <span class="stat-label">ambition</span>
+    </div>
+    <div class="stat-card fade-up">
+      <span class="stat-number">#1</span>
+      <span class="stat-label">objectif marché</span>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCONOMIE PILLARS -->
+<section id="pillars" style="max-width:1200px; padding: 6rem 2rem;">
+  <div class="section-header fade-up">
+    <span class="section-eyebrow">// 02 — Stratégie</span>
+    <h2 class="section-title">LES 4 PILIERS DE L'EMPIRE</h2>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="pillars-grid">
+    <div class="pillar fade-up">
+      <span class="pillar-num">// 01</span>
+      <h3>CONTRÔLE DES RESSOURCES</h3>
+      <p>On identifie les matières premières les plus demandées et on en prend le <strong>monopole</strong>. Mines, farms, spawners — tout est inventorié, tout est optimisé.</p>
+    </div>
+
+    <div class="pillar fade-up">
+      <span class="pillar-num">// 02</span>
+      <h3>COMMERCE STRATÉGIQUE</h3>
+      <p>Nos shops sont <strong>calculés au centime près</strong>. On fixe les prix du serveur. Pas d'improvisation, que de la stratégie pure et dure.</p>
+    </div>
+
+    <div class="pillar fade-up">
+      <span class="pillar-num">// 03</span>
+      <h3>INVESTISSEMENT & CROISSANCE</h3>
+      <p>Chaque coin gagné est <strong>réinvesti</strong>. Infra de base, upgrades de fermes, achat de terrains stratégiques. On pense long terme.</p>
+    </div>
+
+    <div class="pillar fade-up">
+      <span class="pillar-num">// 04</span>
+      <h3>DIPLOMATIE PAR LA DETTE</h3>
+      <p>On prête, on finance, on crée des <strong>dépendances</strong>. Les alliances s'achètent. Le pouvoir aussi. On joue le jeu autrement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- RÈGLES -->
+<section id="regles">
+  <div class="section-header fade-up">
+    <span class="section-eyebrow">// 03 — Code interne</span>
+    <h2 class="section-title">LES RÈGLES DU SANG</h2>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="rules-list">
+    <div class="rule-item fade-up">
+      <span class="rule-num">01</span>
+      <div class="rule-content">
+        <h4>La team avant tout</h4>
+        <p>Tes ressources individuelles appartiennent au collectif. Ce qui enrichit BLOOD t'enrichit. Pas de triche entre membres, jamais.</p>
+      </div>
+    </div>
+
+    <div class="rule-item fade-up">
+      <span class="rule-num">02</span>
+      <div class="rule-content">
+        <h4>Discipline économique</h4>
+        <p>Pas de vente impulsive, pas de prix cassé sans accord. Chaque transaction est coordonnée pour maximiser le profit collectif.</p>
+      </div>
+    </div>
+
+    <div class="rule-item fade-up">
+      <span class="rule-num">03</span>
+      <div class="rule-content">
+        <h4>Silence stratégique</h4>
+        <p>Nos plans restent en interne. On ne parle pas de nos stocks, nos prix, nos stratégies à l'extérieur. L'avantage compétitif se garde.</p>
+      </div>
+    </div>
+
+    <div class="rule-item fade-up">
+      <span class="rule-num">04</span>
+      <div class="rule-content">
+        <h4>Activité requise</h4>
+        <p>Un membre inactif est un poids. On s'attend à une présence régulière et une contribution concrète au développement de l'empire.</p>
+      </div>
+    </div>
+
+    <div class="rule-item fade-up">
+      <span class="rule-num">05</span>
+      <div class="rule-content">
+        <h4>Respect de la chaîne de commande</h4>
+        <p>Les décisions stratégiques passent par la direction. Les initiatives individuelles sont encouragées mais validées collectivement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECRUTEMENT -->
+<section id="recrutement" style="max-width:none;">
+  <div class="recruit-inner">
+    <div class="section-header fade-up">
+      <span class="section-eyebrow">// 04 — Recrutement</span>
+      <h2 class="section-title">REJOINDRE L'EMPIRE</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <p class="recruit-desc fade-up">
+      On ne recrute pas des joueurs. On recrute des <strong style="color:#fff">stratèges</strong>.<br>
+      Si t'as la tête pour les chiffres et l'ambition pour dominer,<br>
+      ta place est chez BLOOD.
+    </p>
+
+    <div class="requirements fade-up">
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Mindset économie</span>
+      </div>
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Actif régulièrement</span>
+      </div>
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Esprit d'équipe</span>
+      </div>
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Discret & stratège</span>
+      </div>
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Pas de drama</span>
+      </div>
+      <div class="req-item">
+        <div class="req-dot"></div>
+        <span>Ambition réelle</span>
+      </div>
+    </div>
+
+    <div class="fade-up">
+      <a href="#" class="btn-primary" style="font-size:0.6rem; padding:1.25rem 3rem;">
+        POSTULER SUR DISCORD
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-logo">⬛ BLOOD</p>
+  <p class="footer-text">L'économie est notre sang · Minecraft · © 2025</p>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Counter animation on stats
+  function animateCounter(el, target, suffix = '') {
+    let current = 0;
+    const step = target / 40;
+    const interval = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = (target === Infinity ? '∞' : Math.round(current)) + suffix;
+      if (current >= target) clearInterval(interval);
+    }, 30);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.stat-number').forEach(el => {
+          const txt = el.textContent.trim();
+          if (txt === '100%') animateCounter(el, 100, '%');
+          else if (txt === '0') animateCounter(el, 0);
+          else if (txt === '#1') { el.textContent = '#1'; }
+        });
+        statObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const statsSection = document.getElementById('stats');
+  if (statsSection) statObserver.observe(statsSection);
+
+  // Pixel glitch on hero title
+  const title = document.querySelector('.hero-title');
+  setInterval(() => {
+    if (Math.random() > 0.92) {
+      title.style.textShadow = `${Math.random()*8-4}px ${Math.random()*8-4}px 0 #cc0000, 4px 4px 0 #660000, 0 0 60px rgba(204,0,0,0.4)`;
+      setTimeout(() => {
+        title.style.textShadow = '4px 4px 0 #660000, 8px 8px 0 rgba(100,0,0,0.5), 0 0 60px rgba(204,0,0,0.4)';
+      }, 80);
+    }
+  }, 500);
+</script>
+</body>
+</html>
